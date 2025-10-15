@@ -1,0 +1,95 @@
+/* Body and Background */
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298); /* Blue gradient */
+    margin: 0;
+    padding: 0;
+    color: #fff;
+}
+
+/* Container */
+.about-container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 30px 40px;
+    background-color: rgba(255, 255, 255, 0.1); /* Transparent for blue theme */
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    border-radius: 15px;
+    text-align: center;
+}
+
+/* Main Heading */
+.about-container h1 {
+    font-size: 3em;
+    margin-bottom: 30px;
+    color: #FFD700; /* Golden heading */
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+
+/* Content Layout */
+.about-content {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Image Styling */
+.about-image img {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 5px solid #FFD700; /* Golden border for highlight */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    transition: transform 0.3s;
+}
+
+.about-image img:hover {
+    transform: scale(1.05); /* Slight zoom on hover */
+}
+
+/* Text Section */
+.about-text {
+    flex: 1;
+    max-width: 500px;
+    text-align: left;
+}
+
+/* Name Heading */
+.about-text h2 {
+    color: #FFD700;
+    font-size: 2em;
+    margin-bottom: 15px;
+}
+
+/* Paragraph Text */
+.about-text p {
+    line-height: 1.8;
+    color: #e0e0e0;
+    font-size: 1.1em;
+}
+
+/* Quotes Styling */
+.quote {
+    font-style: italic;
+    font-size: 1.2em;
+    margin-top: 20px;
+    color: #ffeb3b;
+    border-left: 4px solid #FFD700;
+    padding-left: 10px;
+}
+
+/* Responsive */
+@media(max-width: 768px) {
+    .about-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .about-text {
+        max-width: 100%;
+    }
+}

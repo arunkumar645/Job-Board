@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resume Builder - Template 1</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #80deea);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      margin: 40px 0;
+      overflow: hidden;
+    }
+
+    .form-section,
+    .resume-section {
+      padding: 30px;
+    }
+
+    .form-section {
+      background: #fafafa;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #00796b;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    label {
+      font-weight: 600;
+      color: #004d40;
+    }
+
+    input, textarea {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #b2dfdb;
+      font-size: 15px;
+    }
+
+    button {
+      background: #00796b;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #004d40;
+    }
+
+    .resume-section {
+      display: none;
+      color: #333;
+    }
+
+    .resume-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .resume-header img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid #00796b;
+    }
+
+    .resume-header div {
+      flex: 1;
+    }
+
+    .contact-info {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .section-title {
+      margin-top: 25px;
+      font-size: 18px;
+      color: #00796b;
+      border-bottom: 2px solid #00796b;
+      padding-bottom: 4px;
+    }
+
+    #downloadBtn {
+      display: block;
+      margin: 30px auto;
+      background: #004d40;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- FORM SECTION -->
+    <div class="form-section" id="formSection">
+      <h1>Build Your Resume</h1>
+      <form id="resumeForm">
+        <label>Full Name:</label>
+        <input type="text" id="name" required />
+
+        <label>Profession:</label>
+        <input type="text" id="profession" required />
+
+        <label>Email:</label>
+        <input type="email" id="email" required />
+
+        <label>Phone:</label>
+        <input type="text" id="phone" />
+
+        <label>Location:</label>
+        <input type="text" id="location" />
+
+        <label>About You / Summary:</label>
+        <textarea id="summary" rows="4"></textarea>
+
+        <label>Work Experience:</label>
+        <textarea id="experience" rows="4"></textarea>
+
+        <label>Skills (comma-separated):</label>
+        <input type="text" id="skills" />
+
+        <label>Photo:</label>
+        <input type="file" id="photo" accept="image/*" />
+
+        <button type="submit">Generate Resume</button>
+      </form>
+    </div>
+
+    <!-- RESUME SECTION -->
+    <div class="resume-section" id="resumeSection">
+      <div id="resume-content">
+        <div class="resume-header">
+          <img id="resumePhoto" src="" alt="Profile Photo" />
+          <div>
+            <h1 id="resumeName"></h1>
+            <h2 id="resumeProfession"></h2>
+            <div class="contact-info">
+              <p><strong>Email:</strong> <span id="resumeEmail"></span></p>
+              <p><strong>Phone:</strong> <span id="resumePhone"></span></p>
+              <p><strong>Location:</strong> <span id="resumeLocation"></span></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">About</div>
+        <p id="resumeSummary"></p>
+
+        <div class="section-title">Experience</div>
+        <p id="resumeExperience"></p>
+
+        <div class="section-title">Skills</div>
+        <ul id="resumeSkills"></ul>
+      </div>
+
+      <button id="downloadBtn">Download as PDF</button>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("resumeForm");
+    const formSection = document.getElementById("formSection");
+    const resumeSection = document.getElementById("resumeSection");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      // Get user data
+      const name = document.getElementById("name").value;
+      const profession = document.getElementById("profession").value;
+      const email = document.getElementById("email").value;
+      const phone = document.getElementById("phone").value;
+      const location = document.getElementById("location").value;
+      const summary = document.getElementById("summary").value;
+      const experience = document.getElementById("experience").value;
+      const skills = document.getElementById("skills").value.split(",");
+      const photoFile = document.getElementById("photo").files[0];
+
+      // Fill resume
+      document.getElementById("resumeName").textContent = name;
+      document.getElementById("resumeProfession").textContent = profession;
+      document.getElementById("resumeEmail").textContent = email;
+      document.getElementById("resumePhone").textContent = phone;
+      document.getElementById("resumeLocation").textContent = location;
+      document.getElementById("resumeSummary").textContent = summary;
+      document.getElementById("resumeExperience").textContent = experience;
+
+      const skillList = document.getElementById("resumeSkills");
+      skillList.innerHTML = "";
+      skills.forEach(skill => {
+        if (skill.trim() !== "") {
+          const li = document.createElement("li");
+          li.textContent = skill.trim();
+          skillList.appendChild(li);
+        }
+      });
+
+      // Handle photo
+      if (photoFile) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          document.getElementById("resumePhoto").src = e.target.result;
+        };
+        reader.readAsDataURL(photoFile);
+      } else {
+        document.getElementById("resumePhoto").src =
+          "https://via.placeholder.com/120?text=Photo";
+      }
+
+      // Show resume
+      formSection.style.display = "none";
+      resumeSection.style.display = "block";
+    });
+
+    // PDF download
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      const element = document.getElementById("resume-content");
+      const opt = {
+        margin: 0.5,
+        filename: "My_Resume.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+      };
+      html2pdf().set(opt).from(element).save();
+    });
+  </script>
+</body>
+</html>

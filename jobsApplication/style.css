@@ -1,0 +1,78 @@
+body.auth-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #74ABE2, #5563DE);
+  font-family: "Poppins", sans-serif;
+}
+
+.auth-container {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 20px;
+  width: 350px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.auth-container h2 {
+  color: #333;
+}
+
+.auth-box input, .auth-container input {
+  width: 100%;
+}
+
+.btn {
+  font-weight: 600;
+}
+
+a {
+  text-decoration: none;
+  color: #5563DE;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(-20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+
+/* Hero Section */
+.hero {
+  height: 70vh;
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1521791136064-7986c2920216') no-repeat center center/cover;
+}
+
+/* Cards Hover Effect */
+.hover-card:hover {
+  transform: translateY(-10px);
+  transition: 0.3s ease;
+}
+
+/* Resume Form */
+#resumeForm input, #resumeForm textarea {
+  border-radius: 0.5rem;
+}
+
+#resumeForm input, #resumeForm textarea {
+  border-radius: 0.5rem;
+  padding: 10px;
+}
+#resumeForm button {
+  margin-top: 10px;
+}
+.template-card.selected {
+  border: 2px solid #0d6efd;
+  box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+}
+.template-card img {
+  display: block;
+  margin: 0 auto;
+  width: 120px;
+  height: 160px;
+}

@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Board | Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js"></script>
+  <script src="firebaseConfig.js"></script>
+  <script src="app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="#">JobBoard</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#jobs">Jobs</a></li>
+          <li class="nav-item"><a class="nav-link" href="resume.html">Resume Builder</a></li>
+          <li class="nav-item"><a class="nav-link" href="Aboutus.html">About Us</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html" id="logoutBtn">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero text-center text-white d-flex align-items-center justify-content-center">
+    <div class="container">
+      <h1 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">Find Your Dream Job</h1>
+      <p class="lead mb-4 animate__animated animate__fadeInUp">Search thousands of jobs and build your career.</p>
+      <form class="d-flex justify-content-center">
+        <input class="form-control w-50 me-2" type="search" placeholder="Search jobs..." aria-label="Search">
+        <button class="btn btn-light" type="submit">Search</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Jobs Section -->
+  <section id="jobs" class="py-5">
+  <div class="container">
+    <h2 class="mb-4 text-center">Available Jobs</h2>
+
+    <!-- 🔍 Search and Filter Bar -->
+    <div class="text-center mb-4">
+      <input type="text" id="jobSearch" class="form-control w-50 d-inline" placeholder="Search jobs...">
+      <select id="locationFilter" class="form-select w-auto d-inline ms-2">
+        <option value="">All Locations</option>
+        <option value="Remote">Remote</option>
+        <option value="New York">New York</option>
+        <option value="San Francisco">San Francisco</option>
+      </select>
+    </div>
+
+    <!-- 💼 Job Cards -->
+    <div class="row g-4" id="jobList">
+      <!-- Cards will load dynamically using JavaScript -->
+    </div>
+  </div>
+</section>
+
+<!-- 🔹 Job Details Modal -->
+<div class="modal fade" id="jobModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="jobTitle">Job Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="jobDetails"></div>
+      <div class="modal-footer">
+        <a href="#" id="applyLink" class="btn btn-primary">Apply Now</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .hover-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  }
+</style>
+
+<script>
+  // 🧩 Job Data
+  // 🧩 Job Data
+const jobs = [
+  {
+    id: 1,
+    title: "Frontend Developer",
+    company: "TechCorp",
+    location: "Remote",
+    description: "Work with React, Bootstrap, and responsive design to build modern web apps.",
+    salary: "₹6–10 LPA",
+    type: "Full-Time",
+    experience: "1–3 years"
+  },
+  {
+    id: 2,
+    title: "Backend Developer",
+    company: "CodeLabs",
+    location: "New York",
+    description: "Develop scalable backend systems using Node.js, Express, and MongoDB.",
+    salary: "$70,000–$100,000",
+    type: "Full-Time",
+    experience: "2–5 years"
+  },
+  {
+    id: 3,
+    title: "UI/UX Designer",
+    company: "DesignPro",
+    location: "San Francisco",
+    description: "Design intuitive user experiences and collaborate with frontend teams.",
+    salary: "$80,000–$110,000",
+    type: "Remote",
+    experience: "3+ years"
+  },
+  {
+    id: 4,
+    title: "Data Scientist",
+    company: "DataGenix",
+    location: "Bangalore",
+    description: "Analyze large datasets to derive actionable business insights using Python and ML.",
+    salary: "₹10–18 LPA",
+    type: "Full-Time",
+    experience: "2–4 years"
+  },
+  {
+    id: 5,
+    title: "DevOps Engineer",
+    company: "Cloudify",
+    location: "Hyderabad",
+    description: "Manage CI/CD pipelines, cloud deployments, and system monitoring tools.",
+    salary: "₹8–14 LPA",
+    type: "Full-Time",
+    experience: "3–5 years"
+  },
+  {
+    id: 6,
+    title: "Mobile App Developer",
+    company: "AppVantage",
+    location: "Pune",
+    description: "Build Android and iOS apps using Flutter or React Native frameworks.",
+    salary: "₹6–12 LPA",
+    type: "Full-Time",
+    experience: "1–3 years"
+  },
+  {
+    id: 7,
+    title: "AI Engineer",
+    company: "SmartAI Labs",
+    location: "Chennai",
+    description: "Develop AI-powered solutions using TensorFlow, PyTorch, and NLP technologies.",
+    salary: "₹12–20 LPA",
+    type: "Full-Time",
+    experience: "3–6 years"
+  },
+  {
+    id: 8,
+    title: "Cybersecurity Analyst",
+    company: "SecureNet",
+    location: "Delhi",
+    description: "Identify and mitigate security vulnerabilities in enterprise applications.",
+    salary: "₹7–15 LPA",
+    type: "Full-Time",
+    experience: "2–4 years"
+  },
+  {
+    id: 9,
+    title: "Cloud Architect",
+    company: "SkyTech",
+    location: "Remote",
+    description: "Design and manage scalable cloud infrastructure on AWS and Azure.",
+    salary: "₹15–25 LPA",
+    type: "Full-Time",
+    experience: "5+ years"
+  },
+  {
+    id: 10,
+    title: "Database Administrator",
+    company: "InfoSphere",
+    location: "Mumbai",
+    description: "Manage SQL and NoSQL databases, optimize queries, and ensure data security.",
+    salary: "₹8–12 LPA",
+    type: "Full-Time",
+    experience: "3–5 years"
+  },
+  {
+    id: 11,
+    title: "Full Stack Developer",
+    company: "NextCode",
+    location: "Remote",
+    description: "Build complete web apps using MERN stack (MongoDB, Express, React, Node).",
+    salary: "₹8–16 LPA",
+    type: "Full-Time",
+    experience: "2–5 years"
+  },
+  {
+    id: 12,
+    title: "QA Tester",
+    company: "Testify",
+    location: "Kolkata",
+    description: "Perform manual and automated testing to ensure product quality and performance.",
+    salary: "₹4–8 LPA",
+    type: "Full-Time",
+    experience: "1–3 years"
+  },
+  {
+    id: 13,
+    title: "Product Manager",
+    company: "VisionTech",
+    location: "Gurugram",
+    description: "Lead cross-functional teams to deliver innovative software solutions.",
+    salary: "₹15–28 LPA",
+    type: "Full-Time",
+    experience: "5–8 years"
+  },
+  {
+    id: 14,
+    title: "Graphic Designer",
+    company: "PixelWorks",
+    location: "Bangalore",
+    description: "Create modern visuals and branding materials using Adobe Suite and Figma.",
+    salary: "₹5–9 LPA",
+    type: "Full-Time",
+    experience: "1–3 years"
+  },
+  {
+    id: 15,
+    title: "System Administrator",
+    company: "TechSolve",
+    location: "Noida",
+    description: "Maintain network and server infrastructure, ensure uptime and security.",
+    salary: "₹6–10 LPA",
+    type: "Full-Time",
+    experience: "2–4 years"
+  },
+  {
+    id: 16,
+    title: "Content Writer",
+    company: "WriteUp Media",
+    location: "Remote",
+    description: "Write blogs, website copy, and marketing content optimized for SEO.",
+    salary: "₹3–6 LPA",
+    type: "Part-Time",
+    experience: "0–2 years"
+  },
+  {
+    id: 17,
+    title: "Business Analyst",
+    company: "InsightCorp",
+    location: "Pune",
+    description: "Analyze business processes and help optimize operations through data insights.",
+    salary: "₹7–12 LPA",
+    type: "Full-Time",
+    experience: "2–4 years"
+  },
+  {
+    id: 18,
+    title: "Digital Marketing Specialist",
+    company: "AdBoost",
+    location: "Remote",
+    description: "Run paid campaigns, SEO, and analytics for brand growth and lead generation.",
+    salary: "₹5–10 LPA",
+    type: "Full-Time",
+    experience: "1–3 years"
+  },
+  {
+    id: 19,
+    title: "Machine Learning Engineer",
+    company: "DeepLearn",
+    location: "Hyderabad",
+    description: "Build predictive models, deploy ML pipelines, and optimize algorithm performance.",
+    salary: "₹12–22 LPA",
+    type: "Full-Time",
+    experience: "3–6 years"
+  },
+  {
+    id: 20,
+    title: "Software Intern",
+    company: "CodeBridge",
+    location: "Remote",
+    description: "Assist in software development projects and learn full-stack technologies.",
+    salary: "₹15,000/month",
+    type: "Internship",
+    experience: "Fresher"
+  },
+  {
+    id: 21,
+    title: "Technical Support Engineer",
+    company: "HelpDesk Pro",
+    location: "Chennai",
+    description: "Provide tech support and troubleshoot customer issues efficiently.",
+    salary: "₹3–6 LPA",
+    type: "Full-Time",
+    experience: "0–2 years"
+  },
+  {
+    id: 22,
+    title: "Game Developer",
+    company: "PlayVerse",
+    location: "Bangalore",
+    description: "Develop 2D/3D games using Unity or Unreal Engine with engaging gameplay.",
+    salary: "₹8–15 LPA",
+    type: "Full-Time",
+    experience: "2–4 years"
+  },
+  {
+    id: 23,
+    title: "HR Recruiter",
+    company: "TalentHub",
+    location: "Hyderabad",
+    description: "Manage end-to-end hiring process and coordinate candidate interviews.",
+    salary: "₹4–7 LPA",
+    type: "Full-Time",
+    experience: "1–3 years"
+  }
+];
+
+// Example usage:
+const jobList = document.getElementById("jobList");
+
+  // Render Jobs
+  function renderJobs(filterText = "", filterLocation = "") {
+    jobList.innerHTML = "";
+    jobs
+      .filter(job =>
+        job.title.toLowerCase().includes(filterText.toLowerCase()) &&
+        (filterLocation === "" || job.location === filterLocation)
+      )
+      .forEach(job => {
+        jobList.innerHTML += `
+          <div class="col-md-4">
+            <div class="card h-100 shadow-sm hover-card">
+              <div class="card-body">
+                <h5 class="card-title">${job.title}</h5>
+                <p class="card-text">
+                  Company: ${job.company}<br>
+                  Location: ${job.location}
+                </p>
+                <a href="job-details.html?id=${job.id}" class="btn btn-primary">View Details</a>
+              </div>
+            </div>
+          </div>`;
+      });
+  }
+
+  renderJobs();
+
+  // Search & Filter
+  document.getElementById("jobSearch").addEventListener("input", (e) => {
+    renderJobs(e.target.value, document.getElementById("locationFilter").value);
+  });
+  document.getElementById("locationFilter").addEventListener("change", (e) => {
+    renderJobs(document.getElementById("jobSearch").value, e.target.value);
+  });
+</script>
+
+
+
+  <!-- Resume Builder Section -->
+  <!--<section id="resume" class="py-5 bg-light">
+    <div class="container">
+      <h2 class="mb-4 text-center">Resume Builder</h2>
+      <form id="resumeForm" class="mx-auto" style="max-width: 600px;">
+        <div class="mb-3">
+          <input type="text" class="form-control" placeholder="Full Name" id="fullName" required>
+        </div>
+        <div class="mb-3">
+          <input type="email" class="form-control" placeholder="Email" id="resumeEmail" required>
+        </div>
+        <div class="mb-3">
+          <input type="text" class="form-control" placeholder="Phone Number" id="phone" required>
+        </div>
+        <div class="mb-3">
+          <textarea class="form-control" rows="5" placeholder="Write your skills & experience" id="skills"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Generate Resume</button>
+      </form>
+    </div>
+  </section>-->
+  <!-- Resume Template Selection -->
+
+
+
+  <!-- Footer -->
+  <footer class="bg-primary text-white text-center py-3">
+    &copy; 2025 JobBoard. All Rights Reserved.
+  </footer>
+
+  <script>
+    // Logout
+    const logoutBtn = document.getElementById("logoutBtn");
+    logoutBtn?.addEventListener("click", () => {
+      firebase.auth().signOut().then(() => {
+        alert("Logged out successfully!");
+        window.location.href = "index.html";
+      });
+    });
+
+// Resume Builder
+
+const resumeForm = document.getElementById("resumeForm");
+resumeForm?.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const fullName = document.getElementById("fullName").value;
+  const email = document.getElementById("resumeEmail").value;
+  const phone = document.getElementById("phone").value;
+  const title = prompt("Enter your Professional Title (e.g., Frontend Developer):") || "";
+  const summary = prompt("Enter a short summary about yourself:") || "";
+  const skills = prompt("Enter your skills (comma separated):") || "";
+  const experience = prompt("Enter your experience details:") || "";
+  const education = prompt("Enter your education details:") || "";
+  const achievements = prompt("Enter your achievements:") || "";
+  const strengths = prompt("Enter your strengths / interests:") || "";
+  const projects = prompt("Enter your key projects:") || "";
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // === Header ===
+  let y = 20;
+  doc.setFontSize(24);
+  doc.setFont("helvetica", "bold");
+  doc.text(fullName, 105, y, null, null, "center");
+
+  if(title){
+    y += 10;
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "italic");
+    doc.text(title, 105, y, null, null, "center");
+  }
+
+  y += 10;
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "normal");
+  doc.text(`Email: ${email} | Phone: ${phone}`, 105, y, null, null, "center");
+
+  // Horizontal line
+  y += 5;
+  doc.setLineWidth(0.5);
+  doc.line(20, y, 190, y);
+  y += 10;
+
+  // === Summary ===
+  if(summary){
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("Summary", 20, y);
+    y += 7;
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(doc.splitTextToSize(summary, 170), 20, y);
+    y += doc.splitTextToSize(summary, 170).length * 7 + 5;
+  }
+
+  // === Experience ===
+  if(experience){
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("Experience", 20, y);
+    y += 7;
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(doc.splitTextToSize(experience, 170), 20, y);
+    y += doc.splitTextToSize(experience, 170).length * 7 + 5;
+  }
+
+  // === Education ===
+  if(education){
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("Education", 20, y);
+    y += 7;
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(doc.splitTextToSize(education, 170), 20, y);
+    y += doc.splitTextToSize(education, 170).length * 7 + 5;
+  }
+
+  // === Skills & Strengths (two columns) ===
+  if(skills || strengths){
+    let col1 = 20, col2 = 110;
+    let rowY = y;
+    if(skills){
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.text("Skills", col1, rowY);
+      rowY += 7;
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "normal");
+      doc.text(doc.splitTextToSize(skills, 80), col1, rowY);
+    }
+    if(strengths){
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.text("Strengths", col2, rowY);
+      rowY += 7;
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "normal");
+      doc.text(doc.splitTextToSize(strengths, 80), col2, rowY);
+    }
+    y = rowY + 50;
+  }
+
+  // === Achievements ===
+  if(achievements){
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("Achievements", 20, y);
+    y += 7;
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(doc.splitTextToSize(achievements, 170), 20, y);
+    y += doc.splitTextToSize(achievements, 170).length * 7 + 5;
+  }
+
+  // === Projects ===
+  if(projects){
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("Projects", 20, y);
+    y += 7;
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(doc.splitTextToSize(projects, 170), 20, y);
+    y += doc.splitTextToSize(projects, 170).length * 7 + 5;
+  }
+
+  // Save PDF
+  doc.save(`${fullName}_Resume.pdf`);
+});
+
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
